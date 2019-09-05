@@ -1,4 +1,0 @@
-bluetooth
-infrared
-arduino
-refactor
