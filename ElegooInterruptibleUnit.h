@@ -4,33 +4,30 @@
 #include "ElegooCommand.h"
 #include "ElegooCommandReader.h"
 
-class ElegooInterruptibleUnit
-{
+class ElegooInterruptibleUnit {
 private:
-	ElegooCommandReader * commandReader;
+    ElegooCommandReader* commandReader;
 
 protected:
-	ElegooInterruptibleUnit() :
-			commandReader(0)
-	{
-	}
+    ElegooInterruptibleUnit()
+        : commandReader(0)
+    {
+    }
 
 public:
-	void registerCommandReader(ElegooCommandReader * pCommandReader)
-	{
-		commandReader = pCommandReader;
-	}
+    void registerCommandReader(ElegooCommandReader* pCommandReader)
+    {
+        commandReader = pCommandReader;
+    }
 
-	bool hasCommand()
-	{
-		if (commandReader == 0)
-		{
-			return false;
-		}
+    bool hasCommand()
+    {
+        if (commandReader == 0) {
+            return false;
+        }
 
-		return commandReader->hasCommand();
-	}
-
+        return commandReader->hasCommand();
+    }
 };
 
 #endif

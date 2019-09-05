@@ -3,22 +3,21 @@
 
 #include "ElegooDriverBase.h"
 
-class ElegooLineTrackingDriver: public ElegooDriverBase
-{
+class ElegooLineTrackingDriver : public ElegooDriverBase {
 public:
-	ElegooLineTrackingDriver(int pSafetyDistanceInCM, ElegooDistanceUnit & pDistUnit, ElegooMotorUnit & pMotorUnit) :
-			ElegooDriverBase(pSafetyDistanceInCM, pDistUnit, pMotorUnit)
-	{
-	}
+    ElegooLineTrackingDriver(int pSafetyDistanceInCM, ElegooDistanceUnit& pDistUnit, ElegooMotorUnit& pMotorUnit)
+        : ElegooDriverBase(pSafetyDistanceInCM, pDistUnit, pMotorUnit)
+    {
+    }
 
-	virtual ~ElegooLineTrackingDriver()
-	{
-	}
+    virtual ~ElegooLineTrackingDriver()
+    {
+    }
 
-	virtual int processCommand(ElegooCommand cmd)
-	{
-		return motorUnit.statusOK();
-	}
+    virtual int processCommand(ElegooCommand cmd)
+    {
+        return motorUnit.statusOK();
+    }
 };
 
 #endif

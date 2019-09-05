@@ -5,75 +5,69 @@
 #include "ElegooDistanceUnit.h"
 #include "ElegooMotorUnit.h"
 
-class ElegooDriverBase
-{
+class ElegooDriverBase {
 protected:
-	int safetyDistanceInCM;
-	ElegooDistanceUnit & distUnit;
-	ElegooMotorUnit & motorUnit;
+    int safetyDistanceInCM;
+    ElegooDistanceUnit& distUnit;
+    ElegooMotorUnit& motorUnit;
 
 public:
-	ElegooDriverBase(int pSafetyDistanceInCM, ElegooDistanceUnit & pDistUnit, ElegooMotorUnit & pMotorUnit) :
-			safetyDistanceInCM(pSafetyDistanceInCM), distUnit(pDistUnit), motorUnit(pMotorUnit)
-	{
-	}
+    ElegooDriverBase(int pSafetyDistanceInCM, ElegooDistanceUnit& pDistUnit,
+        ElegooMotorUnit& pMotorUnit)
+        : safetyDistanceInCM(pSafetyDistanceInCM)
+        , distUnit(pDistUnit)
+        , motorUnit(pMotorUnit)
+    {
+    }
 
-	virtual ~ElegooDriverBase()
-	{
-	}
+    virtual ~ElegooDriverBase() {}
 
-	virtual int processCommand(ElegooCommand cmd) = 0;
+    virtual int processCommand(ElegooCommand cmd) = 0;
 
 protected:
+    int checkFrontForObstacles(ElegooCommand cmd)
+    {
+        if (cmd == ElegooCommand::NO_COMMAND || cmd == ElegooCommand::MOVE_FORWARDS) {
+            // check front sensor and stop
+            const int frontDistance = distUnit.frontDistance();
+            if (frontDistance < safetyDistanceInCM) {
+                Serial.println("frontDistance < safetyDistanceInCM");
+                motorUnit.stopMoving();
+                return ElegooConstants::STOPPED;
+            }
+        }
 
-	int checkFrontForObstacles(ElegooCommand cmd)
-	{
-		if (cmd == ElegooCommand::NO_COMMAND || cmd == ElegooCommand::MOVE_FORWARDS)
-		{
-			// check front sensor and stop
-			const int frontDistance = distUnit.frontDistance();
-			if (frontDistance < safetyDistanceInCM)
-			{
-				motorUnit.stopMoving();
-				return ElegooConstants::STOPPED;
-			}
-		}
+        return ElegooConstants::OK;
+    }
 
-		return ElegooConstants::OK;
-	}
+    ElegooMotorUnit& backOut()
+    {
+        bool doBackOut = true;
+        int rightDistance = 0;
+        int leftDistance = 0;
 
-	ElegooMotorUnit & backOut()
-	{
-		bool doBackOut = true;
-		int rightDistance = 0;
-		int leftDistance = 0;
+        do {
+            if (motorUnit.hasCommand()) {
+                // escape from the loop !!
+                return motorUnit;
+            }
 
-		do
-		{
-			if (motorUnit.hasCommand())
-			{
-				// escape from the loop !!
-				return motorUnit;
-			}
+            motorUnit.moveBackwards().stopMoving();
+            rightDistance = distUnit.rightDistance();
+            leftDistance = distUnit.leftDistance();
 
-			motorUnit.moveBackwards().stopMoving();
-			rightDistance = distUnit.rightDistance();
-			leftDistance = distUnit.leftDistance();
+            doBackOut = (rightDistance <= safetyDistanceInCM) && (leftDistance <= safetyDistanceInCM);
 
-			doBackOut = (rightDistance <= safetyDistanceInCM) && (leftDistance <= safetyDistanceInCM);
+        } while (doBackOut);
 
-		} while (doBackOut);
-
-		// here either (rightDistance > safetyDistanceInCM) || (leftDistance > safetyDistanceInCM)
-		if (rightDistance > safetyDistanceInCM)
-		{
-			return motorUnit.turnRight();
-		}
-		else
-		{
-			return motorUnit.turnLeft();
-		}
-	}
+        // here either (rightDistance > safetyDistanceInCM) || (leftDistance >
+        // safetyDistanceInCM)
+        if (rightDistance > safetyDistanceInCM) {
+            return motorUnit.turnRight();
+        } else {
+            return motorUnit.turnLeft();
+        }
+    }
 };
 
 #endif

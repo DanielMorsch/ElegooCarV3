@@ -4,66 +4,58 @@
 #include "ElegooDriverBase.h"
 
 // is interruptible
-class ElegooAutomaticDriver2: public ElegooDriverBase
-{
+class ElegooAutomaticDriver2 : public ElegooDriverBase {
 public:
-	ElegooAutomaticDriver2(int pSafetyDistanceInCM, ElegooDistanceUnit & pDistUnit, ElegooMotorUnit & pMotorUnit) :
-			ElegooDriverBase(pSafetyDistanceInCM, pDistUnit, pMotorUnit)
-	{
-	}
+    ElegooAutomaticDriver2(int pSafetyDistanceInCM, ElegooDistanceUnit& pDistUnit, ElegooMotorUnit& pMotorUnit)
+        : ElegooDriverBase(pSafetyDistanceInCM, pDistUnit, pMotorUnit)
+    {
+    }
 
-	virtual ~ElegooAutomaticDriver2()
-	{
-	}
+    virtual ~ElegooAutomaticDriver2()
+    {
+    }
 
-	virtual int processCommand(ElegooCommand cmd)
-	{
-		DistanceData biggestDistance = distUnit.scanBiggestDistance();
-		distUnit.frontDistance(); // position "eyes" to the front
-		adjustPositionForDirection(biggestDistance.direction);
+    virtual int processCommand(ElegooCommand cmd)
+    {
+        DistanceData biggestDistance = distUnit.scanBiggestDistance();
+        distUnit.frontDistance(); // position "eyes" to the front
+        adjustPositionForDirection(biggestDistance.direction);
 
-		if (biggestDistance.distance < safetyDistanceInCM)
-		{
-			return backOut().statusOK();
-		}
+        if (biggestDistance.distance < safetyDistanceInCM) {
+            return backOut().statusOK();
+        }
 
-		int milliSeconds = biggestDistance.distance * 10;
-		if (milliSeconds > 3000)
-		{
-			milliSeconds = 3000;
-		}
+        int milliSeconds = biggestDistance.distance * 10;
+        if (milliSeconds > 3000) {
+            milliSeconds = 3000;
+        }
 
-		return motorUnit.moveForwards(milliSeconds).stopMoving().statusOK();
-	}
+        return motorUnit.moveForwards(milliSeconds).stopMoving().statusOK();
+    }
 
 private:
-	// is interruptible
-	ElegooMotorUnit & adjustPositionForDirection(int direction)
-	{
-		if (motorUnit.hasCommand())
-		{
-			return motorUnit;
-		}
+    // is interruptible
+    ElegooMotorUnit& adjustPositionForDirection(int direction)
+    {
+        if (motorUnit.hasCommand()) {
+            return motorUnit;
+        }
 
-		if (direction == ElegooDistanceUnit::HALF_LEFT)
-		{
-			return motorUnit.turnHalfLeft();
-		}
-		if (direction == ElegooDistanceUnit::HALF_RIGHT)
-		{
-			return motorUnit.turnHalfRight();
-		}
-		if (distUnit.isFarLeftDirection(direction))
-		{
-			return motorUnit.turnLeft();
-		}
-		if (distUnit.isFarRightDirection(direction))
-		{
-			return motorUnit.turnRight();
-		}
+        if (direction == ElegooDistanceUnit::HALF_LEFT) {
+            return motorUnit.turnHalfLeft();
+        }
+        if (direction == ElegooDistanceUnit::HALF_RIGHT) {
+            return motorUnit.turnHalfRight();
+        }
+        if (distUnit.isFarLeftDirection(direction)) {
+            return motorUnit.turnLeft();
+        }
+        if (distUnit.isFarRightDirection(direction)) {
+            return motorUnit.turnRight();
+        }
 
-		return motorUnit;
-	}
+        return motorUnit;
+    }
 };
 
 #endif

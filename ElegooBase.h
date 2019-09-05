@@ -3,17 +3,16 @@
 
 #include "ElegooConstants.h"
 
-class ElegooBase
-{
+class ElegooBase {
 public:
-	ElegooBase()
-	{
-	}
+    ElegooBase()
+    {
+    }
 
-	int statusOK()
-	{
-		return ElegooConstants::OK;
-	}
+    int statusOK()
+    {
+        return ElegooConstants::OK;
+    }
 };
 
 #endif

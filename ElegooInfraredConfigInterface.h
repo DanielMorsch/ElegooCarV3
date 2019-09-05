@@ -3,14 +3,13 @@
 
 #include "ElegooCommand.h"
 
-class ElegooInfraredConfigInterface
-{
+class ElegooInfraredConfigInterface {
 public:
-	virtual ElegooCommand checkCommand(unsigned long possibleCommandCode) = 0;
+    virtual ElegooCommand checkCommand(unsigned long possibleCommandCode) = 0;
 
-	virtual ~ElegooInfraredConfigInterface()
-	{
-	}
+    virtual ~ElegooInfraredConfigInterface()
+    {
+    }
 };
 
 #endif
